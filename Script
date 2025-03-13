@@ -1,0 +1,71 @@
+CREATE DATABASE ABC_Company;
+GO
+USE ABC_Company;
+GO
+
+CREATE TABLE Department (
+    department_code NVARCHAR(10) PRIMARY KEY,
+    department_name NVARCHAR(100)
+);
+GO
+
+CREATE TABLE Employee (
+    employee_code NVARCHAR(10) PRIMARY KEY,
+    employee_name NVARCHAR(100),
+    department_code NVARCHAR(10) FOREIGN KEY REFERENCES Department(department_code)
+);
+GO
+
+CREATE TABLE Salary (
+    salary_id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_code NVARCHAR(10) FOREIGN KEY REFERENCES Employee(employee_code),
+    working_days INT,
+    days_off_with_pay INT,
+    days_off_without_pay INT,
+    basic_salary DECIMAL(10,2),
+    gross_salary DECIMAL(10,2),
+    net_salary DECIMAL(10,2)
+);
+GO
+
+INSERT INTO Department (department_code, department_name) VALUES
+('IT'),
+('HR'),
+('SALE');
+GO
+
+INSERT INTO Employee (employee_code, employee_name, department_code) VALUES
+('A1', 'Nguyễn Văn A', 'IT'),
+('A2', 'Lê Thị Bình', 'IT'),
+('B1', 'Nguyễn Lan', 'HR'),
+('D1', 'Mai Tuấn Anh', 'HR'),
+('C1', 'Hà Thị Lan', 'HR'),
+('C2', 'Lê Tú Chinh', 'SALE'),
+('D2', 'Trần Văn Toàn', 'HR'),
+('A3', 'Trần Văn Nam', 'IT'),
+('B2', 'Huỳnh Anh', 'SALE');
+GO
+
+INSERT INTO Salary (employee_code, working_days, days_off_with_pay, days_off_without_pay, basic_salary, gross_salary, net_salary) VALUES
+('A1', 22, 0, 0, 1000, 22000, 20000),
+('A2', 21, 1, 0, 1200, 26400, 23000),
+('B1', 20, 1, 1, 600, 13200, 12000),
+('D1', 20, 1, 1, 500, 11000, 10000),
+('C1', 22, 0, 0, 500, 11000, 10000),
+('C2', 22, 0, 0, 1200, 26400, 23000),
+('D2', 22, 0, 0, 500, 11000, 10000),
+('A3', 22, 0, 0, 1200, 26400, 23000),
+('B2', 21, 1, 0, 1200, 26400, 23000);
+GO
+
+CREATE PROCEDURE GetTotalSalariesByDepartment
+AS
+BEGIN
+    SELECT e.department_code, d.department_name, SUM(s.net_salary) AS total_salary
+    FROM Salary s
+    JOIN Employee e ON s.employee_code = e.employee_code
+    JOIN Department d ON e.department_code = d.department_code
+    GROUP BY e.department_code, d.department_name
+    ORDER BY e.department_code ASC;
+END;
+GO
