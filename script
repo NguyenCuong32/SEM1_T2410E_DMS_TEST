@@ -1,0 +1,69 @@
+CREATE DATABASE ABC_Company;
+GO
+USE ABC_Company;
+
+CREATE TABLE Department (
+    department_code NVARCHAR(10) PRIMARY KEY,
+    department_name NVARCHAR(100)
+);
+
+
+CREATE TABLE Employee (
+    employee_code CHAR(10) PRIMARY KEY,
+    employee_name NVARCHAR(100),
+    department_code NVARCHAR(10) FOREIGN KEY REFERENCES Department(department_code)
+);
+
+CREATE TABLE Salary (
+    salary_id INT IDENTITY(1,1) PRIMARY KEY,
+    employee_code CHAR(10) FOREIGN KEY REFERENCES Employee(employee_code),
+    working_days INT,
+    days_off_with_pay INT,
+    days_off_without_pay INT,
+    basic_salary DECIMAL(10,2),
+    gross_salary DECIMAL(10,2),
+    net_salary DECIMAL(10,2)
+);
+
+insert into dbo.Department values('IT', 'Information Technology')
+insert into dbo.Department values('HR', 'Human Resources')
+insert into dbo.Department values('SALE', 'Sales')
+
+
+INSERT INTO dbo.Employee values('A1', 'Nguyễn Văn A', 'IT')
+INSERT INTO dbo.Employee values('A2', 'Lê Thị Bình', 'IT')
+INSERT INTO dbo.Employee values ('B1', 'Nguyễn Lan', 'HR')
+INSERT INTO dbo.Employee values('D1', 'Mai Tuấn Anh', 'HR')
+INSERT INTO dbo.Employee values('C1', 'Hà Thị Lan', 'HR')
+INSERT INTO dbo.Employee values('C2', 'Lê Tú Chinh', 'SALE')
+INSERT INTO dbo.Employee values('D2', 'Trần Văn Toàn', 'HR')
+INSERT INTO dbo.Employee values('A3', 'Trần Văn Nam', 'IT')
+INSERT INTO dbo.Employee values('B2', 'Huỳnh Anh', 'SALE')
+
+
+
+
+INSERT INTO dbo.Salary  values('A1', 22, 0, 0, 1000, 22000, 20000)
+INSERT INTO dbo.Salary  values('A2', 21, 1, 0, 1200, 26400, 23000)
+INSERT INTO dbo.Salary  values('B1', 20, 1, 1, 600, 13200, 12000)
+INSERT INTO dbo.Salary  values('D1', 20, 1, 1, 500, 11000, 10000)
+INSERT INTO dbo.Salary  values('C1', 22, 0, 0, 500, 11000, 10000)
+INSERT INTO dbo.Salary  values('C2', 22, 0, 0, 1200, 26400, 23000)
+INSERT INTO dbo.Salary  values('D2', 22, 0, 0, 500, 11000, 10000)
+INSERT INTO dbo.Salary  values('A3', 22, 0, 0, 1200, 26400, 23000)
+INSERT INTO dbo.Salary  values('B2', 21, 1, 0, 1200, 26400, 23000)
+
+
+
+CREATE PROCEDURE GetTotalSalariesByDepartment
+AS
+BEGIN
+    SELECT e.department_code, d.department_name, SUM(s.net_salary) AS total_salary
+    FROM Salary s
+    JOIN Employee e ON s.employee_code = e.employee_code
+    JOIN Department d ON e.department_code = d.department_code
+    GROUP BY e.department_code, d.department_name
+    ORDER BY e.department_code ASC;
+END;
+
+
