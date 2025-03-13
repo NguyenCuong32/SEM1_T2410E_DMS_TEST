@@ -107,3 +107,14 @@ INSERT INTO dbo.Salaries Values('B2',1200,26400,23000)
 SELECT * FROM dbo.Employees
 SELECT * FROM dbo.WorkingDays
 SELECT *, BasicSalary + GrossSalary + NetSalary as FullSalary FROM dbo.Salaries
+
+CREATE PROCEDURE TinhTongLuongTheoPhongBan()
+BEGIN
+    SELECT pb.TenPhongBan, SUM(bl.TongLuong) AS TongLuongPhongBan
+    FROM BangLuong bl
+    JOIN NhanVien nv ON bl.MaNhanVien = nv.MaNhanVien
+    JOIN PhongBan pb ON nv.MaPhongBan = pb.MaPhongBan
+    GROUP BY pb.TenPhongBan
+    ORDER BY pb.TenPhongBan ASC;
+END 
+GO;
