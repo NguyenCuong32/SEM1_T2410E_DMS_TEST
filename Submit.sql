@@ -28,7 +28,6 @@ CREATE TABLE EmployeeSalary(
     NetSalary DECIMAL,
     FOREIGN KEY (EmployeeID) REFERENCES EmployeeName(EmployeeID)
 )
-
 CREATE PROCEDURE TotalSalary
 AS 
 BEGIN
@@ -43,11 +42,13 @@ BEGIN
         EmployeeDay D on E.EmployeeID = D.EmployeeID
     INNER JOIN
         EmployeeSalary S on E.EmployeeID = S.EmployeeID
+    GROUP BY 
+        E.EmployeeID,
+        E.DepartmentCode
     ORDER BY 
         TotalNetSalary ASC;
 END
 GO
-
 
 DELETE From EmployeeName
 DELEte from EmployeeDay
