@@ -1,33 +1,33 @@
--- CREATE DATABASE SEM_FINAL;
--- GO
--- USE SEM_FINAL;
--- GO
+CREATE DATABASE SEM_FINAL;
+GO
+USE SEM_FINAL;
+GO
 
--- CREATE TABLE EmployeeName(
---     EmployeeID char(5) PRIMARY KEY,
---     EmployeeName NVARCHAR(50),
---     DepartmentCode char(5),
+CREATE TABLE EmployeeName(
+    EmployeeID char(5) PRIMARY KEY,
+    EmployeeName NVARCHAR(50),
+    DepartmentCode char(5),
 
--- )
--- GO
--- CREATE TABLE EmployeeDay(
---     AttendanceID int IDENTITY(1,1) PRIMARY KEY,
---     EmployeeID char(5),
---     WorkingDay int,
---     Dayoff_pay int,
---     Dayoff_nopay int,
---     FOREIGN KEY (EmployeeID) REFERENCES EmployeeName(EmployeeID)
--- )
--- GO
+)
+GO
+CREATE TABLE EmployeeDay(
+    AttendanceID int IDENTITY(1,1) PRIMARY KEY,
+    EmployeeID char(5),
+    WorkingDay int,
+    Dayoff_pay int,
+    Dayoff_nopay int,
+    FOREIGN KEY (EmployeeID) REFERENCES EmployeeName(EmployeeID)
+)
+GO
 
--- CREATE TABLE EmployeeSalary(
---     SalaryID int IDENTITY(1,1) PRIMARY KEY,  
---     EmployeeID char(5),
---     BasicSalary DECIMAL,
---     GrossSalary DECIMAL,
---     NetSalary DECIMAL,
---     FOREIGN KEY (EmployeeID) REFERENCES EmployeeName(EmployeeID)
--- )
+CREATE TABLE EmployeeSalary(
+    SalaryID int IDENTITY(1,1) PRIMARY KEY,  
+    EmployeeID char(5),
+    BasicSalary DECIMAL,
+    GrossSalary DECIMAL,
+    NetSalary DECIMAL,
+    FOREIGN KEY (EmployeeID) REFERENCES EmployeeName(EmployeeID)
+)
 
 CREATE PROCEDURE TotalSalary
 AS 
