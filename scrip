@@ -1,0 +1,75 @@
+CREATE DATABASE ABC_Company;
+GO
+
+USE ABC_Company;
+GO
+
+CREATE TABLE Department (
+    DepartmentCode VARCHAR(10) PRIMARY KEY,
+    DepartmentName VARCHAR(50) NOT NULL
+);
+GO
+
+CREATE TABLE Employee (
+    EmployeeCode VARCHAR(10) PRIMARY KEY,
+    EmployeeName VARCHAR(100) NOT NULL,
+    DepartmentCode VARCHAR(10) FOREIGN KEY REFERENCES Department(DepartmentCode)
+);
+GO
+
+CREATE TABLE Salary (
+    EmployeeCode VARCHAR(10) FOREIGN KEY REFERENCES Employee(EmployeeCode),
+    NumberOfWorkingDays INT,
+    NumberOfDaysOffWithPay INT,
+    NumberOfDaysOffWithoutPay INT,
+    BasicSalary DECIMAL(10, 2),
+    GrossSalary DECIMAL(10, 2),
+    NetSalary DECIMAL(10, 2),
+    PRIMARY KEY (EmployeeCode)
+);
+GO
+
+INSERT INTO Department (DepartmentCode, DepartmentName)
+VALUES 
+('IT', 'Information Technology'),
+('HR', 'Human Resources'),
+('SALE', 'Sales');
+GO
+
+INSERT INTO Employee (EmployeeCode, EmployeeName, DepartmentCode)
+VALUES 
+('A1', 'Nguyễn Văn A', 'IT'),
+('A2', 'Lê Thị Bình', 'IT'),
+('B1', 'Nguyễn Lan', 'HR'),
+('D1', 'Mai Tuấn Anh', 'HR'),
+('C1', 'Hà Thị Lan', 'HR'),
+('C2', 'Lê Tú Chinh', 'SALE'),
+('D2', 'Trần Văn Toàn', 'HR'),
+('A3', 'Trần Văn Nam', 'IT'),
+('B2', 'Huỳnh Anh', 'SALE');
+GO
+
+INSERT INTO Salary (EmployeeCode, NumberOfWorkingDays, NumberOfDaysOffWithPay, NumberOfDaysOffWithoutPay, BasicSalary, GrossSalary, NetSalary)
+VALUES 
+('A1', 22, 0, 0, 1000.00, 22000.00, 20000.00),
+('A2', 21, 1, 0, 1200.00, 26400.00, 23000.00),
+('B1', 20, 1, 1, 600.00, 13200.00, 12000.00),
+('D1', 20, 1, 1, 500.00, 11000.00, 10000.00),
+('C1', 22, 0, 0, 500.00, 11000.00, 10000.00),
+('C2', 22, 0, 0, 1200.00, 26400.00, 23000.00),
+('D2', 22, 0, 0, 500.00, 11000.00, 10000.00),
+('A3', 22, 0, 0, 1200.00, 26400.00, 23000.00),
+('B2', 21, 1, 0, 1200.00, 26400.00, 23000.00);
+GO
+
+CREATE PROCEDURE CalculateTotalSalariesByDepartment
+AS
+BEGIN
+    SELECT d.DepartmentCode, d.DepartmentName, SUM(s.NetSalary) AS TotalNetSalary
+    FROM Department d
+    JOIN Employee e ON d.DepartmentCode = e.DepartmentCode
+    JOIN Salary s ON e.EmployeeCode = s.EmployeeCode
+    GROUP BY d.DepartmentCode, d.DepartmentName
+    ORDER BY d.DepartmentCode ASC;
+END;
+GO
