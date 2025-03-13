@@ -1,0 +1,94 @@
+CREATE DATABASE Payroll;
+GO
+USE PayrollDB;
+GO
+
+CREATE TABLE Departments_1 (
+    DepartmentCode VARCHAR(10) PRIMARY KEY,
+    DepartmentName VARCHAR(50)
+);
+
+CREATE TABLE Employees (
+    EmployeeCode VARCHAR(10) PRIMARY KEY,
+    EmployeeName VARCHAR(50),
+    DepartmentCode VARCHAR(10),
+    BasicSalary INT,
+    FOREIGN KEY (DepartmentCode) REFERENCES Departments(DepartmentCode)
+);
+
+CREATE TABLE Payroll (
+    PayrollID INT IDENTITY(1,1) PRIMARY KEY,
+    EmployeeCode VARCHAR(10),
+    WorkingDays INT,
+    PaidLeaveDays INT,
+    UnpaidLeaveDays INT,
+    GrossSalary INT,
+    NetSalary INT,
+    FOREIGN KEY (EmployeeCode) REFERENCES Employees(EmployeeCode)
+);
+
+
+-- Insert
+INSERT INTO Departments_1 (DepartmentCode, DepartmentName) VALUES
+('IT', 'Information Technology'),
+('HR', 'Human Resources'),
+('SALE', 'Sales');
+
+INSERT INTO Employees (EmployeeCode, EmployeeName, DepartmentCode, BasicSalary) VALUES
+('A1', N'Nguyễn Văn A', 'IT', 1000),
+('A2', N'Lê Thị Bình', 'IT', 1200),
+('B1', N'Nguyễn Lan', 'HR', 600),
+('D1', N'Mai Tuấn Anh', 'HR', 500),
+('C1', N'Hà Thị Lan', 'HR', 500),
+('C2', N'Lê Tú Chinh', 'SALE', 1200),
+('D2', N'Trần Văn Toàn', 'HR', 500),
+('A3', N'Trần Văn Nam', 'IT', 1200),
+('B2', N'Huỳnh Anh', 'SALE', 1200);
+
+INSERT INTO Payroll (EmployeeCode, WorkingDays, PaidLeaveDays, UnpaidLeaveDays, GrossSalary, NetSalary) VALUES
+('A1', 22, 0, 0, 22000, 20000),
+('A2', 21, 1, 0, 26400, 23000),
+('B1', 20, 1, 1, 13200, 12000),
+('D1', 20, 1, 1, 11000, 10000),
+('C1', 22, 0, 0, 11000, 10000),
+('C2', 22, 0, 0, 26400, 23000),
+('D2', 22, 0, 0, 11000, 10000),
+('A3', 22, 0, 0, 26400, 23000),
+('B2', 21, 1, 0, 26400, 23000);
+
+CREATE PROCEDURE GetTotalSalaryByDepartment
+AS
+BEGIN
+    SELECT e.DepartmentCode, d.DepartmentName, SUM(p.GrossSalary) AS TotalGrossSalary, SUM(p.NetSalary) AS TotalNetSalary
+    FROM Payroll p
+    JOIN Employees e ON p.EmployeeCode = e.EmployeeCode
+    JOIN Departments d ON e.DepartmentCode = d.DepartmentCode
+    GROUP BY e.DepartmentCode, d.DepartmentName
+    ORDER BY e.DepartmentCode ASC;
+END;
+
+EXEC GetTotalSalaryByDepartment;
+
+
+
+-- Testing
+SELECT * FROM Departments_1;
+
+SELECT * FROM Employees;
+SELECT * FROM Payroll;
+
+delete from Departments_1;
+delete from Payroll;
+DELETE  FROM Employees;
+
+
+-- testing an employee in an unknown department
+INSERT INTO Employees (EmployeeCode, EmployeeName, DepartmentCode, BasicSalary) VALUES
+('X1', 'Test Employee', 'UNKNOWN', 1000); -- Error
+
+-- no employeecode
+INSERT INTO Payroll (EmployeeCode, WorkingDays, PaidLeaveDays, UnpaidLeaveDays, GrossSalary, NetSalary) VALUES
+('X1', 20, 0, 0, 20000, 18000); -- Error
+
+-- exec test
+EXEC GetTotalSalaryByDepartment;
